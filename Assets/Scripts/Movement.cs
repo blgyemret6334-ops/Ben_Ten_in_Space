@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
@@ -8,6 +7,7 @@ public class Movement : MonoBehaviour
     public float rotationSpeed = 10f;
     public float friction = 0.5f;
     public Transform cSprite;
+    public float groundBoost = 3f;
 
     public void Awake()
     {
@@ -27,6 +27,7 @@ public class Movement : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
+ 
         if (verticalInput != 0)
         {
             rb.AddTorque(verticalInput * rotationSpeed);
@@ -38,19 +39,21 @@ public class Movement : MonoBehaviour
                 cSprite.localScale = new Vector3(1, 1, 1);
                 rb.AddForce(transform.right * enginePower);
             }
-            else if (horizontalInput < 0)
+            else
             {
                 cSprite.localScale = new Vector3(-1, 1, 1);
                 rb.AddForce(-transform.right * enginePower);
             }
         }
     }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
-        float hor = Input.GetAxis("Horizontal");
-        if (hor != 0)
+        float verticalInput = Input.GetAxis("Vertical");
+        if (verticalInput != 0)
         {
-            rb.AddForceY(enginePower * 0.5f);
+            rb.AddTorque(verticalInput * rotationSpeed * groundBoost);
+            rb.AddForce(Vector2.up * enginePower * 0.2f);
         }
     }
 }
